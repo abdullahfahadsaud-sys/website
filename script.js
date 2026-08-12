@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: 'الكنب', price: 20, unit: 'm', description: 'إزالة تامة للبقع والروائح', icon: 'https://img.icons8.com/ios/80/ffffff/sofa.png', type: 'calculator' },
         { name: 'الموكيت', price: 7, unit: 'm2', description: 'تنظيف عميق للموكيت والسجاد', icon: 'https://img.icons8.com/ios/80/ffffff/rug.png', type: 'calculator' },
         { name: 'الجلسة العربي', price: 10, unit: 'm', description: 'نظافة وتعقيم للجلسات', icon: 'https://img.icons8.com/ios/80/ffffff/cushion.png', type: 'calculator' },
-        { name: 'ستائر', price: 12.5, unit: 'm2', description: 'تنظيف بالبخار في مكانها', icon: '/star.png', type: 'calculator' },
+        { name: 'ستائر', price: 12.5, unit: 'm2', description: 'تنظيف بمكائن في مكانها', icon: '/star.png', type: 'calculator' },
         { name: 'الخداديات', price: 7.5, unit: 'm', description: 'تنظيف وتعقيم الخداديات', icon: 'https://img.icons8.com/ios/80/ffffff/pillow.png', type: 'calculator' },
         { name: 'الأرضيات', price: 4, unit: 'm2', description: 'تلميع وجلي الأرضيات', icon: '/ard.png', type: 'calculator' },
         { name: 'النوافذ', price: 12.5, unit: 'qty', description: 'تنظيف وتلميع النوافذ', icon: '/nafth.png', type: 'calculator' },
