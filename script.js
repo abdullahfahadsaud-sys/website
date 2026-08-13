@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     'use strict';
 
     const WHATSAPP_NUMBER = '966500362696';
-    const FORM_ENDPOINT = 'https://formspree.io/f/xvgdvqzg';
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     // قائمة الخدمات والأسعار الحالية كما هي دون تغيير.
@@ -62,6 +61,16 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/[۰-۹]/g, digit => persianDigits.indexOf(digit));
     }
 
+    function parseLocalizedNumber(value) {
+        const normalizedValue = toEnglishDigits(value)
+            .trim()
+            .replace(/[٫،,]/g, '.')
+            .replace(/\s+/g, '');
+        if (!/^\d*(?:\.\d*)?$/.test(normalizedValue)) return 0;
+        const number = Number(normalizedValue);
+        return Number.isFinite(number) && number > 0 ? number : 0;
+    }
+
     function normalizeSaudiPhone(value) {
         let phone = toEnglishDigits(value).trim().replace(/[\s()-]/g, '');
         if (/^05\d{8}$/.test(phone)) phone = `+966${phone.slice(1)}`;
@@ -103,6 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // واجهة صغيرة قابلة للاختبار دون ربط أي أداة تتبع أو مكتبة خارجية.
     window.cleanTimeUtils = Object.freeze({
         normalizeSaudiPhone,
+        parseLocalizedNumber,
         getTodayString,
         isBookableDate,
         buildWhatsAppUrl
@@ -281,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function numberField(id, label, placeholder) {
         return `<div class="input-group">
             <label class="input-label" for="${id}">${label}</label>
-            <input class="input-field calculator-input" type="number" inputmode="decimal" id="${id}" placeholder="${placeholder}" min="0" step="0.1">
+            <input class="input-field calculator-input" type="text" inputmode="decimal" id="${id}" placeholder="${placeholder}" autocomplete="off" aria-label="${label}">
         </div>`;
     }
 
@@ -324,10 +334,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
                 <div class="booking-actions">
-                    <button type="submit" class="ripple-btn">تأكيد الحجز</button>
-                    <a class="whatsapp-fallback hidden" target="_blank" rel="noopener noreferrer" data-track-whatsapp>إرسال الطلب عبر واتساب</a>
+                    <button type="submit" class="ripple-btn whatsapp-submit" data-track-whatsapp>إرسال الحجز عبر واتساب</button>
                 </div>
-                <p class="form-status" role="status" aria-live="polite"></p>
             </form>
         </div>`;
     }
@@ -349,7 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h3 id="modal-title">حاسبة سعر ${escapeHtml(service.name)}</h3>
                 ${calculatorInputs(service)}
                 <div class="price-display"><h4>السعر: <span id="price-result">0.00</span> ريال</h4></div>
-                <button type="button" class="ripple-btn calculate-book-button hidden">احسب</button>
+                <button type="button" class="ripple-btn calculate-book-button hidden">احجز</button>
             </section>
             <hr class="booking-separator hidden">
             <section class="booking-container hidden">${bookingFormMarkup(service)}</section>`;
@@ -371,9 +379,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const calculate = () => {
             let price = 0;
-            if (service.unit === 'm2') price = (Number(document.getElementById('width')?.value) || 0) * (Number(document.getElementById('length')?.value) || 0) * service.price;
-            if (service.unit === 'm') price = (Number(document.getElementById('length')?.value) || 0) * service.price;
-            if (service.unit === 'qty') price = (Number(document.getElementById('quantity')?.value) || 0) * service.price;
+            if (service.unit === 'm2') price = parseLocalizedNumber(document.getElementById('width')?.value) * parseLocalizedNumber(document.getElementById('length')?.value) * service.price;
+            if (service.unit === 'm') price = parseLocalizedNumber(document.getElementById('length')?.value) * service.price;
+            if (service.unit === 'qty') price = parseLocalizedNumber(document.getElementById('quantity')?.value) * service.price;
             result.textContent = price.toFixed(2);
             calculateAndBookButton.classList.toggle('hidden', price <= 0);
             if (price > 0 && !calculatorEventSent) {
@@ -382,7 +390,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
-        inputs.forEach(input => input.addEventListener('input', calculate));
+        inputs.forEach(input => input.addEventListener('input', event => {
+            event.target.value = event.target.value.replace(/[^0-9٠-٩۰-۹.,٫،]/g, '');
+            calculate();
+        }));
         calculateAndBookButton.addEventListener('click', () => {
             bookingContainer.classList.remove('hidden');
             separator.classList.remove('hidden');
@@ -432,47 +443,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return !firstInvalidName;
     }
 
-    function appendPayload(formPayload, data, orderNumber, service) {
-        const fields = {
-            'رقم الطلب': orderNumber,
-            'الخدمة': data.service,
-            'المدينة': data.city,
-            'الحي': data.district,
-            'الجوال': data.phone,
-            'التاريخ': data.date,
-            'الفترة': data.period,
-            'ملاحظات العميل': data.notes || 'لا توجد',
-            '_subject': `حجز جديد #${orderNumber}: ${data.service}`
-        };
-        if (data.estimate) fields['السعر المقدر'] = `${data.estimate} ريال`;
-        if (service?.type === 'discount') fields['الخصم'] = `${service.discount}% لخدمات المساجد`;
-        Object.entries(fields).forEach(([key, value]) => formPayload.append(key, value));
-    }
-
-    function renderSuccess(data, orderNumber) {
-        const whatsappUrl = buildWhatsAppUrl(data, orderNumber);
-        modalBody.innerHTML = `<section class="booking-success" aria-live="polite">
-            <h3 id="modal-title">تم استلام طلبك بنجاح</h3>
-            <p>رقم الطلب</p><strong class="order-number">#${escapeHtml(orderNumber)}</strong>
-            <ul class="booking-summary">
-                <li><span>الخدمة</span><strong>${escapeHtml(data.service)}</strong></li>
-                <li><span>المدينة / الحي</span><strong>${escapeHtml(data.city)} / ${escapeHtml(data.district)}</strong></li>
-                <li><span>التاريخ</span><strong>${escapeHtml(data.date)}</strong></li>
-                <li><span>الفترة</span><strong>${escapeHtml(data.period)}</strong></li>
-            </ul>
-            <a class="whatsapp-followup" href="${whatsappUrl}" target="_blank" rel="noopener noreferrer" data-track-whatsapp>متابعة الطلب عبر واتساب</a>
-        </section>`;
-        modalBody.querySelector('.whatsapp-followup')?.focus();
-    }
-
     function setupBookingForm(service) {
         const form = document.getElementById('booking-form-actual');
         if (!form || form.dataset.ready === 'true') return;
         form.dataset.ready = 'true';
-        const submitButton = form.querySelector('button[type="submit"]');
-        const fallback = form.querySelector('.whatsapp-fallback');
-        const status = form.querySelector('.form-status');
-        let submitting = false;
         let started = false;
 
         form.addEventListener('input', event => {
@@ -481,51 +455,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 trackEvent('booking_start', { service: service?.name || 'يختارها العميل' });
             }
             if (event.target.name) setFieldError(form, event.target.name, '');
-            const currentData = readFormData(form, service);
-            fallback.href = buildWhatsAppUrl(currentData);
         });
 
-        form.addEventListener('submit', async event => {
+        form.addEventListener('submit', event => {
             event.preventDefault();
-            if (submitting) return;
             const data = readFormData(form, service);
-            fallback.href = buildWhatsAppUrl(data);
             if (!validateBooking(form, data)) return;
 
-            submitting = true;
-            submitButton.disabled = true;
-            submitButton.setAttribute('aria-busy', 'true');
-            submitButton.innerHTML = '<span class="spinner" aria-hidden="true"></span> جاري الإرسال';
-            status.textContent = '';
-            status.className = 'form-status';
-
             const orderNumber = createOrderNumber();
-            const formPayload = new FormData();
-            appendPayload(formPayload, data, orderNumber, service);
-
-            try {
-                const response = await fetch(FORM_ENDPOINT, {
-                    method: 'POST',
-                    headers: { Accept: 'application/json' },
-                    body: formPayload
-                });
-                if (!response.ok) throw new Error(`Booking request failed: ${response.status}`);
-                trackEvent('booking_submit_success', { service: data.service, orderNumber });
-                renderSuccess(data, orderNumber);
-            } catch {
-                trackEvent('booking_submit_failure', { service: data.service });
-                status.textContent = 'تعذر إرسال الطلب الآن، بياناتك ما زالت موجودة ويمكنك إرسالها مباشرة عبر واتساب';
-                status.className = 'form-status error';
-                fallback.href = buildWhatsAppUrl(data);
-                fallback.classList.remove('hidden');
-            } finally {
-                submitting = false;
-                if (submitButton.isConnected) {
-                    submitButton.disabled = false;
-                    submitButton.removeAttribute('aria-busy');
-                    submitButton.textContent = 'تأكيد الحجز';
-                }
-            }
+            trackEvent('booking_submit_whatsapp', { service: data.service, orderNumber });
+            window.open(buildWhatsAppUrl(data, orderNumber), '_blank', 'noopener,noreferrer');
         });
     }
 

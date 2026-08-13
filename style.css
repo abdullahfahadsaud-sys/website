@@ -1238,23 +1238,6 @@ footer a:hover { color: var(--accent-glow); }
     background: #d94a30;
 }
 
-/* --- New: Spinner for Form Submission --- */
-.spinner {
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    border-top: 3px solid #fff;
-    border-radius: 50%;
-    width: 1em;
-    height: 1em;
-    animation: spin 1s linear infinite;
-    display: inline-block;
-    vertical-align: middle;
-    margin-left: 0.5em;
-}
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
 /* --- تحسينات المرحلة الأولى: الهيدر، الجوال، الحجز --- */
 .site-header {
     position: sticky;
@@ -1433,51 +1416,11 @@ select.input-field { appearance: auto; }
     margin-top: 20px;
 }
 .booking-actions .ripple-btn { margin: 0; }
-.whatsapp-fallback, .whatsapp-followup {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 46px;
-    padding: 10px 18px;
-    border-radius: 24px;
-    color: #fff;
+.booking-actions .whatsapp-submit {
     background: #168b46;
-    text-decoration: none;
-    font-weight: 700;
 }
-.form-status { margin: 14px 0 0; padding: 12px 14px; border-radius: 10px; line-height: 1.65; }
-.form-status:empty { display: none; }
-.form-status.error {
-    color: #fff2ef;
-    background: rgba(185, 48, 28, 0.38);
-    border: 1px solid rgba(255, 138, 120, 0.5);
-}
-.booking-success { text-align: center; }
-.booking-success h3 { margin: 0 0 10px; color: #9be7b3; }
-.order-number {
-    display: inline-block;
-    margin: 6px 0 18px;
-    padding: 8px 14px;
-    border-radius: 9px;
-    background: rgba(0, 0, 0, 0.24);
-    color: var(--accent-glow);
-    font-size: 1.15rem;
-    font-weight: 700;
-    direction: ltr;
-}
-.booking-summary {
-    margin: 0 auto 20px;
-    padding: 0;
-    max-width: 380px;
-    list-style: none;
-    text-align: right;
-}
-.booking-summary li {
-    display: flex;
-    justify-content: space-between;
-    gap: 18px;
-    padding: 9px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+.booking-actions .whatsapp-submit:hover {
+    background: #117a3c;
 }
 body.modal-open { overflow: hidden; }
 
@@ -1556,7 +1499,6 @@ body.modal-open { overflow: hidden; }
     .service-card-content p { min-height: 0; font-size: 0.88rem; line-height: 1.6; }
     button.ripple-btn { min-height: 44px; font-size: 0.92rem; }
     .intro-copy h1, .section-heading h2, .coverage-layout h2, #services h2 { font-size: 1.65rem; }
-    .booking-summary li { display: block; }
     .contact-fab-toggle { min-width: 136px; min-height: 50px; padding: 9px 15px; }
     .contact-fab-menu { width: min(286px, calc(100vw - 20px)); }
 }
@@ -1569,7 +1511,6 @@ body.modal-open { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     [data-aos] { opacity: 1 !important; transform: none !important; }
-    .spinner { animation-duration: 1.5s !important; animation-iteration-count: infinite !important; }
     .contact-fab, .contact-fab-menu, .contact-fab-toggle,
     .contact-fab-toggle svg, .contact-option { transition: none !important; }
 }
