@@ -7,18 +7,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // قائمة الخدمات والأسعار الحالية كما هي دون تغيير.
     const services = [
         { name: 'مكيف اسبليت', price: 50, unit: 'qty', description: 'غسيل وصيانة الفلاتر', icon: 'https://img.icons8.com/ios/80/ffffff/air-conditioner--v1.png', type: 'calculator', featured: true },
-        { name: 'مكيف شباك', price: 35, unit: 'qty', description: 'تنظيف شامل للوحدة', icon: '/shb.png', type: 'calculator', featured: true },
-        { name: 'مكيف دولابي', price: 90, unit: 'qty', description: 'تنظيف شامل للمكيف الواقف', icon: '/mkef.png', type: 'calculator', featured: true },
+        { name: 'مكيف شباك', price: 35, unit: 'qty', description: 'تنظيف شامل للوحدة', icon: '/website/shb.png', type: 'calculator', featured: true },
+        { name: 'مكيف دولابي', price: 90, unit: 'qty', description: 'تنظيف شامل للمكيف الواقف', icon: '/website/mkef.png', type: 'calculator', featured: true },
         { name: 'الكنب', price: 20, unit: 'm', description: 'إزالة تامة للبقع والروائح', icon: 'https://img.icons8.com/ios/80/ffffff/sofa.png', type: 'calculator' },
         { name: 'الموكيت', price: 7, unit: 'm2', description: 'تنظيف عميق للموكيت والسجاد', icon: 'https://img.icons8.com/ios/80/ffffff/rug.png', type: 'calculator' },
         { name: 'الجلسة العربي', price: 10, unit: 'm', description: 'نظافة وتعقيم للجلسات', icon: 'https://img.icons8.com/ios/80/ffffff/cushion.png', type: 'calculator' },
-        { name: 'ستائر', price: 12.5, unit: 'm2', description: 'تنظيف بمكائن في مكانها', icon: '/star.png', type: 'calculator' },
+        { name: 'ستائر', price: 12.5, unit: 'm2', description: 'تنظيف بمكائن في مكانها', icon: '/website/star.png', type: 'calculator' },
         { name: 'الخداديات', price: 7.5, unit: 'm', description: 'تنظيف وتعقيم الخداديات', icon: 'https://img.icons8.com/ios/80/ffffff/pillow.png', type: 'calculator' },
-        { name: 'الأرضيات', price: 4, unit: 'm2', description: 'تلميع وجلي الأرضيات', icon: '/ard.png', type: 'calculator' },
-        { name: 'النوافذ', price: 12.5, unit: 'qty', description: 'تنظيف وتلميع النوافذ', icon: '/nafth.png', type: 'calculator' },
+        { name: 'الأرضيات', price: 4, unit: 'm2', description: 'تلميع وجلي الأرضيات', icon: '/website/ard.png', type: 'calculator' },
+        { name: 'النوافذ', price: 12.5, unit: 'qty', description: 'تنظيف وتلميع النوافذ', icon: '/website/nafth.png', type: 'calculator' },
         { name: 'مسابح', price: 350, unit: 'qty', description: 'تنظيف وتعقيم المسابح', icon: 'https://img.icons8.com/ios/80/ffffff/swimming-pool.png', type: 'calculator' },
         { name: 'شقة', description: 'تنظيف شامل للشقق السكنية', icon: 'https://img.icons8.com/ios/80/ffffff/apartment.png', type: 'booking' },
-        { name: 'فله', description: 'تنظيف شامل للفلل', icon: '/flah.png', type: 'booking' },
+        { name: 'فله', description: 'تنظيف شامل للفلل', icon: '/website/flah.png', type: 'booking' },
         { name: 'خدمات المساجد', description: 'نظافة وتعقيم لبيوت الله', icon: 'https://img.icons8.com/ios/80/ffffff/mosque.png', type: 'discount', discount: 50 }
     ];
 
